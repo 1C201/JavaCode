@@ -23,73 +23,118 @@
 </body>
 </html>
 
-   var reader; //GLOBAL File Reader object for demo purpose only
+var reader; //GLOBAL File Reader object for demo purpose only
 
-    /**
-     * Check for the various File API support.
-     */
-    function checkFileAPI() {
-        if (window.File && window.FileReader && window.FileList && window.Blob) {
-            reader = new FileReader();
-            return true;
-        } else {
-            alert('The File APIs are not fully supported by your browser. Fallback required.');
-            return false;
-        }
-    }
-
-    /**
-     * read text input
-     */
-    function readText(filePath) {
-        var output = ""; //placeholder for text output
-        if(filePath.files && filePath.files[0]) {
-            reader.onload = function (e) {
-                output = e.target.result;
-                objectCreation(output);
-            };//end onload()
-            reader.readAsText(filePath.files[0]);
-        }//end if html5 filelist support
-        else if(ActiveXObject && filePath) { //fallback to IE 6-8 support via ActiveX
-            try {
-                reader = new ActiveXObject("Scripting.FileSystemObject");
-                var file = reader.OpenTextFile(filePath, 1); //ActiveX File Object
-                output = file.ReadAll(); //text contents of file
-                file.Close(); //close file "input stream"
-                objectCreation(output);
-            } catch (e) {
-                if (e.number == -2146827859) {
-                    alert('Unable to access local files due to browser security settings. ' +
-                     'To overcome this, go to Tools->Internet Options->Security->Custom Level. ' +
-                     'Find the setting for "Initialize and script ActiveX controls not marked as safe" and change it to "Enable" or "Prompt"');
-                }
-            }
-        }
-        else { //this is where you could fallback to Java Applet, Flash or similar
-            return false;
-        }
+/**
+ * Check for the various File API support.
+ */
+function checkFileAPI() {
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+        reader = new FileReader();
         return true;
+    } else {
+        alert('The File APIs are not fully supported by your browser. Fallback required.');
+        return false;
+    }
+}
+
+/**
+ * read text input
+ */
+function readText(filePath) {
+    var output = ""; //placeholder for text output
+    if(filePath.files && filePath.files[0]) {
+        reader.onload = function (e) {
+            output = e.target.result;
+            objectCreation(output);
+        };//end onload()
+        reader.readAsText(filePath.files[0]);
+    }//end if html5 filelist support
+    else if(ActiveXObject && filePath) { //fallback to IE 6-8 support via ActiveX
+        try {
+            reader = new ActiveXObject("Scripting.FileSystemObject");
+            var file = reader.OpenTextFile(filePath, 1); //ActiveX File Object
+            output = file.ReadAll(); //text contents of file
+            file.Close(); //close file "input stream"
+            objectCreation(output);
+        } catch (e) {
+            if (e.number == -2146827859) {
+                alert('Unable to access local files due to browser security settings. ' +
+                    'To overcome this, go to Tools->Internet Options->Security->Custom Level. ' +
+                    'Find the setting for "Initialize and script ActiveX controls not marked as safe" and change it to "Enable" or "Prompt"');
+            }
+        }
+    }
+    else { //this is where you could fallback to Java Applet, Flash or similar
+        return false;
+    }
+    return true;
+}
+
+/**
+ * display content using a basic HTML replacement
+ */
+function objectCreation(txt){
+    var i = 0;
+    fileLines=txt.split("\n");
+    for(var i = 0;i<fileLines.length;i++){
+        line = fileLines[i];
+        // define the expression to match all items with their given data and key
+        var regEx = new RegExp(/\((.*?)\|(\d+)\)/g),
+            match = null,
+            data = {}
+
+        // while there is a match, continue to load `data`
+        var googleArray = [];
+        while (match = regEx.exec(line)) {
+            data[match[1]] = match[2];
+        }
+        googleArray.push(data['CE101-4-FY']+","+data['TC_MK']+",");
+        console.log(googleArray);
+
+
+        // data!
+        i++;
     }
 
-    /**
-     * display content using a basic HTML replacement
-     */
-    function objectCreation(txt){
-        var i = 0;
-        fileLines=txt.split("\n");
-        for(var i = 0;i<fileLines.length;i++){
-            line = fileLines[i];
-            // define the expression to match all items with their given data and key
-            var regEx = new RegExp(/\((.*?)\|(\d+)\)/g),
-                match = null,
-                data = {}
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawChart);
 
-            // while there is a match, continue to load `data`
-            while (match = regEx.exec(line)) {
-              data[match[1]] = match[2];
-            }
+    var stringValues = data['CE101-4-FY'];
+    for(var key in data){
+        googleArray.push()
 
-            // data!
-            console.log(data);
-            i++;
-            }}
+    }
+
+
+
+
+    var data = google.visualization.arrayToDataTable([
+        ['CE141', 'Average'],
+        [ 41,     43],
+        [ 11,      55],
+        [ 75,      80],
+        [ 12,      42],
+        [ 41,     43],
+        [ 11,      55],
+        [85,     92],
+        [ 71,      79],
+        [ 33,      58],
+        [ 47,     77],
+        [ 90,      59],
+        [14,     33],
+        [ 70,      80],
+        [ 66,      57],
+
+    ]);
+
+    var options = {
+        title: 'CE141-4-FY',
+        hAxis: {title: 'Average', minValue: 0, maxValue: 100},
+        vAxis: {title: 'CE141-4-FY', minValue: 0, maxValue: 100},
+        legend: 'none'
+    };
+
+    var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+
+    chart.draw(data, options);
